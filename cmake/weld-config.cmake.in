@@ -1,0 +1,7 @@
+@PACKAGE_INIT@
+
+# Define the API by including the modules installed next to this file.
+# Each module defines its functions guarded so repeated includes are safe.
+include("${CMAKE_CURRENT_LIST_DIR}/api/weld.cmake")
+
+check_required_components(weld)
