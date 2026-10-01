@@ -1,6 +1,8 @@
+include(${CMAKE_CURRENT_LIST_DIR}/internal/dep_file.cmake)
+
 if(NOT COMMAND weld_project)
     function(weld_project)
-        set(options)
+        set(options USE_DEP_FILE)
         set(oneValueArgs DEFAULT_STD)
         set(multiValueArgs)
         cmake_parse_arguments(PARSE_ARGV 0 pack
@@ -8,8 +10,14 @@ if(NOT COMMAND weld_project)
         )
 
         if(DEFINED pack_DEFAULT_STD)
-            set(${PROJECT_NAME}_DEFAULT_STD "${pack_DEFAULT_STD}" PARENT_SCOPE)
+            set(${PROJECT_NAME}_DEFAULT_STD "${pack_DEFAULT_STD}" CACHE INTERNAL "" FORCE)
+        else()
+            unset(${PROJECT_NAME}_DEFAULT_STD CACHE)
         endif()
+
+        set(${PROJECT_NAME}_USE_DEP_FILE ${pack_USE_DEP_FILE} CACHE INTERNAL "" FORCE)
+
+        unset(${PROJECT_NAME}_TESTS CACHE)
 
         option(${PROJECT_NAME}_BUILD_TESTS "Build tests" ${PROJECT_IS_TOP_LEVEL})
         option(${PROJECT_NAME}_BUILD_EXAMPLES "Build examples" ${PROJECT_IS_TOP_LEVEL})
@@ -31,14 +39,40 @@ if(NOT COMMAND weld_project)
             include(GNUInstallDirs)
         endif()
 
-        unset(${PROJECT_NAME}_TESTS CACHE)
+        if(${PROJECT_NAME}_USE_DEP_FILE)
+            weld_parse_dep_file()
+
+            foreach(dep IN LISTS ${PROJECT_NAME}_CORE_DEPS)
+                find_package(${${PROJECT_NAME}_${dep}_FIND_NAME} ${${PROJECT_NAME}_${dep}_VERSION} REQUIRED)
+            endforeach()
+
+            foreach(dep IN LISTS ${PROJECT_NAME}_OPTIONAL_DEPS)
+                find_package(${${PROJECT_NAME}_${dep}_FIND_NAME} ${${PROJECT_NAME}_${dep}_VERSION})
+            endforeach()
+
+            if(${PROJECT_NAME}_BUILD_TESTS)
+                foreach(dep IN LISTS ${PROJECT_NAME}_TESTS_DEPS)
+                    find_package(${${PROJECT_NAME}_${dep}_FIND_NAME} ${${PROJECT_NAME}_${dep}_VERSION} REQUIRED)
+                endforeach()
+            endif()
+
+            if(${PROJECT_NAME}_BUILD_EXAMPLES)
+                foreach(dep IN LISTS ${PROJECT_NAME}_EXAMPLES_DEPS)
+                    find_package(${${PROJECT_NAME}_${dep}_FIND_NAME} ${${PROJECT_NAME}_${dep}_VERSION} REQUIRED)
+                endforeach()
+            endif()
+        endif()
     endfunction()
 endif()
 
 if(NOT COMMAND weld_dependency)
     function(weld_dependency dep)
+        if(${PROJECT_NAME}_USE_DEP_FILE)
+            message(FATAL_ERROR "[weld] ${PROJECT_NAME} has been configured to use a dep file so calls to weld_dependency() are forbiden. Choose one approach or the other.")
+        endif()
+
         set(options FOR_EXAMPLES FOR_TESTS OPTIONAL)
-        set(oneValueArgs)
+        set(oneValueArgs VERSION)
         set(multiValueArgs)
         cmake_parse_arguments(PARSE_ARGV 1 dep
             "${options}" "${oneValueArgs}" "${multiValueArgs}"
@@ -52,8 +86,15 @@ if(NOT COMMAND weld_dependency)
             return()
         endif()
 
+        if(DEFINED dep_VERSION)
+            list(APPEND find_args "${dep_VERSION}")
+            set(${PROJECT_NAME}_${dep}_VERSION ${dep_VERSION} PARENT_SCOPE)
+        else()
+            set(${PROJECT_NAME}_${dep}_VERSION "" PARENT_SCOPE)
+        endif()
+
         if(NOT dep_OPTIONAL)
-            set(find_args "REQUIRED")
+            list(APPEND find_args "REQUIRED")
         endif()
 
         find_package(${dep} ${find_args} ${dep_UNPARSED_ARGUMENTS})
