@@ -13,11 +13,12 @@ find_package(
 
 weld_project(
     DEFAULT_STD 17
+    # USE_DEP_FILE
 )
 
-weld_dependency(fmt)
-weld_dependency(spdlog FOR_TESTS)
+weld_dependency(fmt VERSION 10.0 FALLBACK gh:fmtlib/fmt@10.0)
+weld_dependency(Catch2 VERSION 3.16 FOR_TESTS FALLBACK gh:catchorg/catch2@v3.16.0)
 weld_dependency(tinyxml2 FOR_EXAMPLES)
-weld_dependency(yaml-cpp OPTIONAL)
+weld_dependency(yaml-cpp VERSION 0.8.0 OPTIONAL)
 
 weld_build()

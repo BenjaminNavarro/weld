@@ -1,0 +1,28 @@
+{
+  "core": {
+    "fmt": {
+      "version": "10.0",
+      "find_name": "fmt",
+      "fallback": "gh:fmtlib/fmt@10.0",
+      "conan_ref": "fmt/10.0",
+      "vcpkg_port": "fmt"
+    }
+  },
+  "tests": {
+    "catch2": {
+      "version": "3.16",
+      "find_name": "Catch2",
+      "fallback": "gh:catchorg/catch2@v3.16.0"
+    }
+  },
+  "examples": {
+    "tinyxml2": {
+      "version": "11.0"
+    }
+  },
+  "optional": {
+    "yaml-cpp": {
+      "version": "0.8.0"
+    }
+  }
+}

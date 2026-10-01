@@ -1,4 +1,5 @@
 include(${CMAKE_CURRENT_LIST_DIR}/internal/dep_file.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/internal/find_package.cmake)
 
 if(NOT COMMAND weld_project)
     function(weld_project)
@@ -43,22 +44,22 @@ if(NOT COMMAND weld_project)
             weld_parse_dep_file()
 
             foreach(dep IN LISTS ${PROJECT_NAME}_CORE_DEPS)
-                find_package(${${PROJECT_NAME}_${dep}_FIND_NAME} ${${PROJECT_NAME}_${dep}_VERSION} REQUIRED)
+                weld_find_package(${dep} REQUIRED)
             endforeach()
 
             foreach(dep IN LISTS ${PROJECT_NAME}_OPTIONAL_DEPS)
-                find_package(${${PROJECT_NAME}_${dep}_FIND_NAME} ${${PROJECT_NAME}_${dep}_VERSION})
+                weld_find_package(${dep})
             endforeach()
 
             if(${PROJECT_NAME}_BUILD_TESTS)
                 foreach(dep IN LISTS ${PROJECT_NAME}_TESTS_DEPS)
-                    find_package(${${PROJECT_NAME}_${dep}_FIND_NAME} ${${PROJECT_NAME}_${dep}_VERSION} REQUIRED)
+                    weld_find_package(${dep} REQUIRED)
                 endforeach()
             endif()
 
             if(${PROJECT_NAME}_BUILD_EXAMPLES)
                 foreach(dep IN LISTS ${PROJECT_NAME}_EXAMPLES_DEPS)
-                    find_package(${${PROJECT_NAME}_${dep}_FIND_NAME} ${${PROJECT_NAME}_${dep}_VERSION} REQUIRED)
+                    weld_find_package(${dep} REQUIRED)
                 endforeach()
             endif()
         endif()
@@ -72,7 +73,7 @@ if(NOT COMMAND weld_dependency)
         endif()
 
         set(options FOR_EXAMPLES FOR_TESTS OPTIONAL)
-        set(oneValueArgs VERSION)
+        set(oneValueArgs VERSION FALLBACK)
         set(multiValueArgs)
         cmake_parse_arguments(PARSE_ARGV 1 dep
             "${options}" "${oneValueArgs}" "${multiValueArgs}"
@@ -93,11 +94,17 @@ if(NOT COMMAND weld_dependency)
             set(${PROJECT_NAME}_${dep}_VERSION "" PARENT_SCOPE)
         endif()
 
+        if(DEFINED dep_FALLBACK)
+            set(${PROJECT_NAME}_${dep}_FALLBACK ${dep_FALLBACK})
+        endif()
+
         if(NOT dep_OPTIONAL)
             list(APPEND find_args "REQUIRED")
         endif()
 
-        find_package(${dep} ${find_args} ${dep_UNPARSED_ARGUMENTS})
+        set(${PROJECT_NAME}_${dep}_FIND_NAME ${dep})
+
+        weld_find_package(${dep} ${find_args} ${dep_UNPARSED_ARGUMENTS})
 
         list(APPEND ${PROJECT_NAME}_ALL_DEPS ${dep})
         set(${PROJECT_NAME}_ALL_DEPS ${${PROJECT_NAME}_ALL_DEPS} PARENT_SCOPE)

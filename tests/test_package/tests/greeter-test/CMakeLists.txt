@@ -4,4 +4,5 @@ weld_test(
         main.cpp
     PRIVATE
         test_package::my-lib
+        Catch2::Catch2WithMain
 )
