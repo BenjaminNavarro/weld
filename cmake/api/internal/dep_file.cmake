@@ -2,7 +2,11 @@
     function(weld_parse_dep_file)
         file(READ ${CMAKE_CURRENT_SOURCE_DIR}/deps.json deps)
         foreach(category core tests examples optional)
-            string(JSON type TYPE ${deps} ${category})
+            string(JSON type ERROR_VARIABLE error TYPE ${deps} ${category})
+            if(NOT type)
+                continue()
+            endif()
+
             string(JSON length LENGTH ${deps} ${category})
             math(EXPR max_index "${length}-1")
             foreach(index RANGE ${max_index})
