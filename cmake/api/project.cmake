@@ -158,12 +158,14 @@ if(NOT COMMAND weld_build)
         endif()
 
         if(${PROJECT_NAME}_INSTALL)
-            install(
-                EXPORT ${PROJECT_NAME}-targets
-                FILE ${PROJECT_NAME}-targets.cmake
-                NAMESPACE ${PROJECT_NAME}::
-                DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
-            )
+            if(${PROJECT_NAME}-targets)
+                install(
+                    EXPORT ${PROJECT_NAME}-targets
+                    FILE ${PROJECT_NAME}-targets.cmake
+                    NAMESPACE ${PROJECT_NAME}::
+                    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+                )
+            endif()
 
             write_basic_package_version_file(
                 ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config-version.cmake
