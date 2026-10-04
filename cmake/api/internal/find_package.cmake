@@ -1,6 +1,6 @@
-include(${CMAKE_CURRENT_LIST_DIR}/fetch_content.cmake)
+include(${WELD_API_DIR}/internal/fetch_content.cmake)
 
- if(NOT COMMAND weld_find_package)
+if(NOT COMMAND weld_find_package)
     function(weld_find_package dep)
         set(options REQUIRED)
         set(oneValueArgs)

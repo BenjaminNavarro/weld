@@ -1,5 +1,6 @@
-include(${CMAKE_CURRENT_LIST_DIR}/internal/dep_file.cmake)
-include(${CMAKE_CURRENT_LIST_DIR}/internal/find_package.cmake)
+include(${WELD_API_DIR}/internal/dep_file.cmake)
+include(${WELD_API_DIR}/internal/find_package.cmake)
+include(${WELD_API_DIR}/internal/conan.cmake)
 
 if(NOT COMMAND weld_project)
     function(weld_project)

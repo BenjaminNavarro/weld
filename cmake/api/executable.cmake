@@ -1,4 +1,4 @@
- include(${CMAKE_CURRENT_LIST_DIR}/internal/component.cmake)
+ include(${WELD_API_DIR}/internal/component.cmake)
 
  if(NOT COMMAND weld_executable)
     function(weld_executable name)
