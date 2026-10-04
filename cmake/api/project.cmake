@@ -19,6 +19,9 @@ if(NOT COMMAND weld_project)
 
         set(${PROJECT_NAME}_USE_DEP_FILE ${pack_USE_DEP_FILE} CACHE INTERNAL "" FORCE)
 
+        unset(${PROJECT_NAME}_LIBRARIES CACHE)
+        unset(${PROJECT_NAME}_EXECUTABLES CACHE)
+        unset(${PROJECT_NAME}_EXAMPLES CACHE)
         unset(${PROJECT_NAME}_TESTS CACHE)
 
         option(${PROJECT_NAME}_BUILD_TESTS "Build tests" ${PROJECT_IS_TOP_LEVEL})

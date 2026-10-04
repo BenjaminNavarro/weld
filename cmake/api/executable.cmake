@@ -19,6 +19,14 @@
 
         weld_component(${name} ${target})
 
+        if(${target}_IS_EXAMPLE)
+            list(APPEND ${PROJECT_NAME}_EXAMPLES ${target})
+            set(${PROJECT_NAME}_EXAMPLES ${${PROJECT_NAME}_EXAMPLES} CACHE INTERNAL "" FORCE)
+        else()
+            list(APPEND ${PROJECT_NAME}_EXECUTABLES ${target})
+            set(${PROJECT_NAME}_EXECUTABLES ${${PROJECT_NAME}_EXECUTABLES} CACHE INTERNAL "" FORCE)
+        endif()
+
         # ---- install (guarded) ----
         if(${PROJECT_NAME}_INSTALL AND NOT ${target}_IS_EXAMPLE)
             install(

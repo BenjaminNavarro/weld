@@ -9,6 +9,9 @@
 
         weld_component(${name} ${target})
 
+        list(APPEND ${PROJECT_NAME}_LIBRARIES ${target})
+        set(${PROJECT_NAME}_LIBRARIES ${${PROJECT_NAME}_LIBRARIES} CACHE INTERNAL "" FORCE)
+
         target_include_directories(
             ${target}
             PUBLIC
