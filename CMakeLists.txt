@@ -30,6 +30,7 @@ if (PROJECT_IS_TOP_LEVEL)
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/weld
     )
     file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/cmake/api DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/share/conanfile.py ${CMAKE_CURRENT_SOURCE_DIR}/conanfile.py)
 else()
     # Being consumed via add_subdirectory/FetchContent: define the API directly.
     include(cmake/api/weld.cmake)

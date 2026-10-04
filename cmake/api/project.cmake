@@ -77,7 +77,7 @@ if(NOT COMMAND weld_dependency)
         endif()
 
         set(options FOR_EXAMPLES FOR_TESTS OPTIONAL)
-        set(oneValueArgs VERSION FALLBACK)
+        set(oneValueArgs VERSION FALLBACK CONAN_REF)
         set(multiValueArgs)
         cmake_parse_arguments(PARSE_ARGV 1 dep
             "${options}" "${oneValueArgs}" "${multiValueArgs}"
@@ -100,6 +100,17 @@ if(NOT COMMAND weld_dependency)
 
         if(DEFINED dep_FALLBACK)
             set(${PROJECT_NAME}_${dep}_FALLBACK ${dep_FALLBACK})
+        endif()
+
+        if(DEFINED dep_CONAN_REF)
+            set(${PROJECT_NAME}_${dep}_CONAN_REF ${dep_CONAN_REF} PARENT_SCOPE)
+        elseif(DEFINED dep_VERSION)
+            # Use ^ for semver compatibility in case the version we have doesn't cover
+            # all the version digits specified in the conan refs (e.g given 1.0 but expecting 1.0.0)
+            set(${PROJECT_NAME}_${dep}_CONAN_REF "${dep}/[~${dep_VERSION}]" PARENT_SCOPE)
+        else()
+            # no version specified -> allow the full range of versions and Conan will pick the greater one possible
+            set(${PROJECT_NAME}_${dep}_CONAN_REF "${dep}/[>=0.0]" PARENT_SCOPE)
         endif()
 
         if(NOT dep_OPTIONAL)
@@ -160,6 +171,8 @@ if(NOT COMMAND weld_build)
                 WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/tests
             )
         endif()
+
+        weld_enable_conan_support()
 
         if(${PROJECT_NAME}_INSTALL)
             if(${PROJECT_NAME}-targets)

@@ -20,6 +20,8 @@
             message(WARNING "[weld] component ${name} declared without sources. Make sure it's on purpose.")
         endif()
 
+        set(${PROJECT_NAME}_${target}_NAME ${name} CACHE INTERNAL "" FORCE)
+
         if(comp_AUTO_SOURCES)
             file(GLOB comp_SOURCES CONFIGURE_DEPENDS *.cpp)
         endif()
@@ -35,11 +37,14 @@
         target_compile_features(${target} PUBLIC cxx_std_${comp_STD})
 
         set(visibilities PUBLIC PRIVATE INTERFACE)
+        set(target_deps)
         foreach(visibility IN LISTS visibilities)
             foreach(dep IN LISTS comp_${visibility})
                 target_link_libraries(${target} ${visibility} ${dep})
+                list(APPEND target_deps ${dep})
             endforeach()
         endforeach()
+        set(${PROJECT_NAME}_${target}_DEPS ${target_deps} CACHE INTERNAL "" FORCE)
 
         set_target_properties(
             ${target}
